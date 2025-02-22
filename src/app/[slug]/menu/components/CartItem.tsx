@@ -19,7 +19,7 @@ const CartItem = ({ product }: CartItemProps) => {
   return (
     <div className="flex items-center justify-between gap-3 border-t pt-5 first:border-t-0 first:pt-0">
       <div className="flex gap-3">
-        <ProductThumbnail src={product.imageUrl} alt={product.name} size={20} />
+        <ProductThumbnail src={product.imageUrl} alt={product.name} />
 
         <div className="flex items-center space-y-0.5">
           <div className="max-w-40">

@@ -31,11 +31,7 @@ const Products = ({ products }: ProductsProps) => {
             </p>
           </div>
 
-          <ProductThumbnail
-            src={product.imageUrl}
-            alt={product.name}
-            size={20}
-          />
+          <ProductThumbnail src={product.imageUrl} alt={product.name} />
         </Link>
       ))}
     </div>
