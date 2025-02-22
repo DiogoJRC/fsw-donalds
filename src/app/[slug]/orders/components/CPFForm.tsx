@@ -48,12 +48,15 @@ const CPFForm = () => {
   });
   const router = useRouter();
   const pathname = usePathname();
+
   const onSubmit = (data: FormSchema) => {
-    router.push(`${pathname}?cpf=${removeCPFPunctuation(data.cpf)}`);
+    router.replace(`${pathname}?cpf=${removeCPFPunctuation(data.cpf)}`);
   };
+
   const handleCancel = () => {
     router.back();
   };
+
   return (
     <Drawer open>
       <DrawerContent className="px-2">
