@@ -1,16 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ConsumptionMethod } from "@prisma/client";
-import { Loader2Icon } from "lucide-react";
-import { useParams, useSearchParams } from "next/navigation";
-import { useContext, useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
-import { toast } from "sonner";
 import { z } from "zod";
 
-import { createOrder } from "@/actions/createOrder";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -20,7 +15,6 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
   Form,
@@ -31,13 +25,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { CartContext } from "@/contexts/CartContext";
 import { isValidCPF } from "@/helpers/isValidCPF";
+import { removeCPFPunctuation } from "@/helpers/removeCPFPunctuation";
 
 const formSchema = z.object({
-  name: z.string().trim().min(1, {
-    message: "O nome é obrigatório.",
-  }),
   cpf: z
     .string()
     .trim()
@@ -51,80 +42,31 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-interface FinishOrderDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
-  const { slug } = useParams<{ slug: string }>();
-  const { products } = useContext(CartContext);
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+const CPFForm = () => {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      cpf: "",
-    },
-    shouldUnregister: true,
   });
-
+  const router = useRouter();
+  const pathname = usePathname();
   const onSubmit = (data: FormSchema) => {
-    try {
-      const consumptionMethod = searchParams.get(
-        "consumptionMethod",
-      ) as ConsumptionMethod;
-      startTransition(async () => {
-        await createOrder({
-          consumptionMethod,
-          customerCpf: data.cpf,
-          customerName: data.name,
-          products,
-          slug,
-        });
-
-        onOpenChange(false);
-
-        toast.success("Pedido finalizado com sucesso!");
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    router.push(`${pathname}?cpf=${removeCPFPunctuation(data.cpf)}`);
   };
-
+  const handleCancel = () => {
+    router.back();
+  };
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerTrigger asChild></DrawerTrigger>
+    <Drawer open>
       <DrawerContent className="px-2">
         <DrawerHeader>
-          <DrawerTitle>Quase lá!</DrawerTitle>
+          <DrawerTitle>Visualizar Pedidos</DrawerTitle>
           <DrawerDescription className="mt-2 px-3 text-center">
-            Para finalizar o seu pedido, insira os seus dados abaixo.
+            Insira seu CPF abaixo para visualizar seus pedidos.
           </DrawerDescription>
         </DrawerHeader>
 
-        <div className="p-5 pt-1">
+        <div className="p-5">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Seu nome</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="rounded-full text-sm"
-                        placeholder="Digite seu nome"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="cpf"
@@ -151,6 +93,7 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
                     className="w-1/2 rounded-full"
                     variant="secondary"
                     size="lg"
+                    onClick={handleCancel}
                   >
                     Cancelar
                   </Button>
@@ -161,10 +104,8 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
                   type="submit"
                   variant="destructive"
                   size="lg"
-                  disabled={isPending}
                 >
-                  {isPending && <Loader2Icon className="animate-spin" />}
-                  Finalizar
+                  Confirmar
                 </Button>
               </DrawerFooter>
             </form>
@@ -175,4 +116,4 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
   );
 };
 
-export default FinishOrderDialog;
+export default CPFForm;
