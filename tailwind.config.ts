@@ -57,6 +57,9 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        "cart-summary": "0px 11px 38.9px 0px rgba(0, 0, 0, 0.25)",
+      },
     },
   },
   plugins: [tailwindcssAnimate],
