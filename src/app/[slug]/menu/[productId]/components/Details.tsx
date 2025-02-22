@@ -1,10 +1,11 @@
 "use client";
 
 import { Prisma } from "@prisma/client";
-import { ChefHatIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChefHatIcon } from "lucide-react";
 import Image from "next/image";
 import { useContext, useState } from "react";
 
+import ProductQuantityInput from "@/app/[slug]/components/ProductQuantityInput";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CartContext } from "@/contexts/CartContext";
@@ -51,9 +52,9 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
 
   const handleAddToCart = () => {
     addProduct({
-        ...product,
-        quantity,
-      });
+      ...product,
+      quantity,
+    });
 
     toggleCart();
   };
@@ -79,27 +80,11 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             {formatCurrency(product.price)}
           </h3>
 
-          <div className="flex items-center gap-2 text-center">
-            <Button
-              variant="outline"
-              className="h-8 w-8 rounded-xl transition-all duration-200 ease-linear"
-              onClick={handleDecreaseQuantity}
-              disabled={quantity === 1}
-            >
-              <ChevronLeftIcon />
-            </Button>
-
-            <p className="w-5">{quantity}</p>
-
-            <Button
-              variant="destructive"
-              className="h-8 w-8 rounded-xl transition-all duration-200 ease-linear"
-              onClick={handleIncreaseQuantity}
-              disabled={quantity >= 99}
-            >
-              <ChevronRightIcon />
-            </Button>
-          </div>
+          <ProductQuantityInput
+            quantity={quantity}
+            onDecrease={handleDecreaseQuantity}
+            onIncrease={handleIncreaseQuantity}
+          />
         </div>
 
         <div className="my-3 flex-auto overflow-hidden">
