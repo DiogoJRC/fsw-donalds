@@ -37,7 +37,7 @@ const Cart = () => {
   return (
     <>
       <Sheet open={isOpen} onOpenChange={toggleCart}>
-        <SheetContent className="w-[80%] pt-8">
+        <SheetContent className="w-[85%] pt-8">
           <SheetHeader>
             <SheetTitle className="text-left">Sacola</SheetTitle>
           </SheetHeader>
