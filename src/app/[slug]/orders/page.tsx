@@ -29,6 +29,7 @@ const OrdersPage = async ({ searchParams }: OrdersPageProps) => {
       restaurant: {
         select: {
           name: true,
+          slug: true,
           avatarImageUrl: true,
         },
       },

@@ -16,6 +16,7 @@ interface OrdersListProps {
         restaurant: {
           select: {
             name: true;
+            slug: true;
             avatarImageUrl: true;
           };
         };
@@ -33,12 +34,17 @@ const getStatusLabel = (status: OrderStatus) => {
   if (status === "FINISHED") return "Finalizado";
   if (status === "IN_PREPARATION") return "Em preparo";
   if (status === "PENDING") return "Pendente";
+  if (status === "PAYMENT_CONFIRMED") return "Pagamento confirmado";
+  if (status === "PAYMENT_FAILED") return "Pagamento falhou";
   return "";
 };
 
 const OrdersList = ({ orders }: OrdersListProps) => {
   const router = useRouter();
-  const handleBackClick = () => router.back();
+
+  const restaurantSlug = orders[0].restaurant.slug;
+
+  const handleBackClick = () => router.replace(`/${restaurantSlug}`);
 
   return (
     <div className="space-y-6 p-6">
@@ -63,7 +69,12 @@ const OrdersList = ({ orders }: OrdersListProps) => {
         >
           <div
             className={`w-fit rounded-full px-2 py-1 text-xs font-semibold ${
-              order.status === OrderStatus.FINISHED
+              (
+                [
+                  OrderStatus.PAYMENT_CONFIRMED,
+                  OrderStatus.FINISHED,
+                ] as OrderStatus[]
+              ).includes(order.status)
                 ? "bg-green-500 text-white"
                 : order.status === OrderStatus.IN_PREPARATION
                   ? "bg-gray-50 text-primary"
